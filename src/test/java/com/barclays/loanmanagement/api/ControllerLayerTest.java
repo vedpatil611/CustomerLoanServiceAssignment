@@ -1,7 +1,5 @@
 package com.barclays.loanmanagement.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterAll;
@@ -23,8 +21,11 @@ import com.barclays.loanmanagement.exception.BarclaysBankException;
 import com.barclays.loanmanagement.repository.CustomerRepository;
 import com.barclays.loanmanagement.utils.LoanStatus;
 
-//@DataJpaTest
-//@AutoConfigureTestDatabase(replace = Replace.NONE)
+/**
+ * ControllerLayerTest - JUnits for controller layer
+ * @author Ved
+ *
+ */
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 public class ControllerLayerTest {
@@ -41,6 +42,9 @@ public class ControllerLayerTest {
 	static LoanDTO loanDTO1, loanDTO2;
 	static CustomerDTO customerDTO1;
 	
+	/**
+	 * initStatics - Initialize variables before test start
+	 */
 	@BeforeAll
 	public static void initStatics() {
 		loanDTO1 = new LoanDTO();
@@ -60,14 +64,32 @@ public class ControllerLayerTest {
 		customerDTO1.setName("ved");
 	}
 	
+	/**
+	 * addLoanAndCustomerFailureTest - Add new loan and customer but fail because customer data is not supplied
+	 * @throws BarclaysBankException
+	 */
 	@Test
 	@Order(1)
-	public void addLoanAndCustomerFailureTest() throws BarclaysBankException {
+	public void addLoanAndCustomerFailureTest1() throws BarclaysBankException {
 		Assertions.assertThrows(BarclaysBankException.class, () -> loanController.addLoanAndCustomer(loanDTO1));
 	}
 	
+	/**
+	 * addLoanAndCustomerFailureTest - Add new loan and customer but fail because loan data is not given
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(2)
+	@Order(1)
+	public void addLoanAndCustomerFailureTest2() throws BarclaysBankException {
+		Assertions.assertThrows(BarclaysBankException.class, () -> loanController.addLoanAndCustomer(null));
+	}
+	
+	/**
+	 * addLoanAndCustomerSuccessTest - Add new loan and customer
+	 * @throws BarclaysBankException
+	 */
+	@Test
+	@Order(1)
 	public void addLoanAndCustomerSuccessTest() throws BarclaysBankException {
 		loanDTO1.setCustomer(customerDTO1);
 		ResponseEntity<Integer> res = loanController.addLoanAndCustomer(loanDTO1);
@@ -75,54 +97,96 @@ public class ControllerLayerTest {
 		loanDTO1.setLoanId(res.getBody());
 	}
 	
+	/**
+	 * getLoanInfoFailureTest - Get loan info but fail because loan id does not exist
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(3)
+	@Order(2)
 	public void getLoanInfoFailureTest() throws BarclaysBankException {
 		Assertions.assertThrows(BarclaysBankException.class, () -> loanController.getLoanDetail(Integer.MAX_VALUE));
 	}
 	
+	/**
+	 * getLoanInfoSuccessTest - Get loan info from id
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(4)
+	@Order(2)
 	public void getLoanInfoSuccessTest() throws BarclaysBankException {
 		ResponseEntity<LoanDTO> res = loanController.getLoanDetail(loanDTO1.getLoanId());
 		Assertions.assertEquals(res.getBody().getLoanId(), loanDTO1.getLoanId());
 	}
 	
+	/**
+	 * closeLoanFailTest - Close loan test fail because loan id does not exist
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(5)
+	@Order(3)
 	public void closeLoanFailTest() throws BarclaysBankException {
 		Assertions.assertThrows(BarclaysBankException.class, () -> loanController.closeLoan(Integer.MAX_VALUE));
 	}
 	
+	/**
+	 * closeLoanSuccessTest - Close loan successfully 
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(6)
+	@Order(3)
 	public void closeLoanSuccessTest() throws BarclaysBankException {
 		ResponseEntity<String> res = loanController.closeLoan(loanDTO1.getLoanId());
 		Assertions.assertEquals(res.getBody(), SystemConstant.LOAN_CLOSE_SUCCESS_RESPONSE);
 	}
 	
+	/**
+	 * addLoanToExistingCustomerFailTest - Add loan to existing customer but fail because invalid customer id is supplied
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(7)
-	public void addLoanToExistingCustomerFailTest() throws BarclaysBankException {
+	@Order(4)
+	public void addLoanToExistingCustomerFailTest1() throws BarclaysBankException {
 		Assertions.assertThrows(BarclaysBankException.class, () -> customerController.sanctionLoanToExistingCustomer(Integer.MAX_VALUE, loanDTO2));
 	}
 	
+	/**
+	 * addLoanToExistingCustomerFailTest - Add loan to existing customer but fail because loan details is not supplied
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(8)
+	@Order(4)
+	public void addLoanToExistingCustomerFailTest2() throws BarclaysBankException {
+		Assertions.assertThrows(BarclaysBankException.class, () -> customerController.sanctionLoanToExistingCustomer(customerDTO1.getCustomerId(), null));
+	}
+	
+	/**
+	 * addLoanToExistingCustomerSuccessTest - Add loan to existing customer successfully
+	 * @throws BarclaysBankException
+	 */
+	@Test
+	@Order(4)
 	public void addLoanToExistingCustomerSuccessTest() throws BarclaysBankException {
 		ResponseEntity<Integer> res = customerController.sanctionLoanToExistingCustomer(customerDTO1.getCustomerId(), loanDTO2);
-		assertEquals(res.getStatusCode(), HttpStatus.OK);
+		Assertions.assertEquals(res.getStatusCode(), HttpStatus.OK);
 		loanDTO2.setLoanId(res.getBody());
 	}
 	
+	/**
+	 * deleteLoanFailTest - Delete loan fail because loan id does not exist
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(9)
+	@Order(5)
 	public void deleteLoanFailTest() throws BarclaysBankException {
 		Assertions.assertThrows(BarclaysBankException.class, () -> loanController.deleteLoan(Integer.MAX_VALUE));
 	}
 	
+	/**
+	 * deleteLoanSuccessTest - Delete loan from database
+	 * @throws BarclaysBankException
+	 */
 	@Test
-	@Order(10)
+	@Order(5)
 	public void deleteLoanSuccessTest() throws BarclaysBankException {
 		ResponseEntity<String> res = loanController.deleteLoan(loanDTO1.getLoanId());
 		Assertions.assertEquals(res.getBody(), SystemConstant.LOAN_DELETE_SUCCESS_RESPONSE);
@@ -133,6 +197,9 @@ public class ControllerLayerTest {
 		customerRepository.deleteById(customerDTO1.getCustomerId());
 	}
 
+	/**
+	 * freeResource - Free static resources after all test
+	 */
 	@AfterAll
 	public static void freeResource() {
 		loanDTO1 = null;

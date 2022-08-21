@@ -41,6 +41,9 @@ public class CustomerLoanServiceImpl implements CustomerLoanService {
 
 	@Override
 	public Integer addLoanAndCustomer(LoanDTO loanDTO) throws BarclaysBankException {
+		if (loanDTO == null) 
+			throw new BarclaysBankException(SystemConstant.LOAN_DETAILS_NOT_PROVIDED_RESPONSE);
+		
 		Loan loan = loanDTO.toLoanEntity();
 		
 		if (loanDTO.getCustomer() == null)
@@ -50,13 +53,15 @@ public class CustomerLoanServiceImpl implements CustomerLoanService {
 		Customer newCustomer = customerRepository.save(customer);
 		loan.setCustomer(newCustomer);
 		Loan newLoan = loanRepository.save(loan);
-		loanDTO.getCustomer().setCustomerId(newCustomer.getCustomerId());
 		
 		return newLoan.getLoanId();
 	}
 
 	@Override
 	public Integer sanctionLoanToExistingCustomer(Integer customerId, LoanDTO loanDTO) throws BarclaysBankException {
+		if (loanDTO == null) 
+			throw new BarclaysBankException(SystemConstant.LOAN_DETAILS_NOT_PROVIDED_RESPONSE);
+		
 		Optional<Customer> customerOpt = customerRepository.findById(customerId);
 		if (!customerOpt.isPresent())
 			throw new BarclaysBankException(SystemConstant.CUSTOMER_NOT_FOUND_RESPONSE);
