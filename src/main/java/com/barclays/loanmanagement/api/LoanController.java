@@ -38,7 +38,6 @@ public class LoanController {
 	
 	@PostMapping(ApiMapping.ADD_LOAN_AND_CUSTOMER)
 	public ResponseEntity<Integer> addLoanAndCustomer(@RequestBody LoanDTO loanDTO) throws BarclaysBankException {
-		System.out.println(loanDTO);
 		return new ResponseEntity<>(customerLoanService.addLoanAndCustomer(loanDTO), HttpStatus.OK);
 	}
 	

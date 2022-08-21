@@ -1,5 +1,10 @@
 package com.barclays.loanmanagement.constants;
 
+/**
+ * Api mapping constants
+ * @author Ved
+ *
+ */
 public interface ApiMapping {
 	public static final String LOAN_CONTROLLER_ROOT = "/api/loan";
 	public static final String GET_LOAN = "/{loanId}";

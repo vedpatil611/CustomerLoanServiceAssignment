@@ -41,16 +41,16 @@ public class CustomerLoanServiceImpl implements CustomerLoanService {
 
 	@Override
 	public Integer addLoanAndCustomer(LoanDTO loanDTO) throws BarclaysBankException {
-		System.out.println(loanDTO.getStatus());
 		Loan loan = loanDTO.toLoanEntity();
-		Customer customer = loanDTO.getCustomer().toCustomerEntity();
 		
-		if (customer == null)
+		if (loanDTO.getCustomer() == null)
 			throw new BarclaysBankException(SystemConstant.CUSTOMER_DETAILS_NOT_PROVIDED_RESPONSE);
 		
+		Customer customer = loanDTO.getCustomer().toCustomerEntity();
 		Customer newCustomer = customerRepository.save(customer);
 		loan.setCustomer(newCustomer);
 		Loan newLoan = loanRepository.save(loan);
+		loanDTO.getCustomer().setCustomerId(newCustomer.getCustomerId());
 		
 		return newLoan.getLoanId();
 	}

@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.barclays.loanmanagement.utils.ErrorInfo;
 
+/**
+ * Automatically Catch all exceptions thrown in controller
+ * @author galactagon
+ *
+ */
 @RestControllerAdvice
 public class LoanManagementExceptionHandler {
 	
